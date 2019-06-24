@@ -27,4 +27,4 @@ const customConfig = {
   }
 };
 
-module.exports = { ...customConfig[ENV], ...baseConfig };
+module.exports = { ...baseConfig, ...customConfig[ENV] };
