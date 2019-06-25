@@ -4,17 +4,17 @@ const { expect } = require("chai");
 const chaiSorted = require("chai-sorted");
 const { app } = require("../app");
 const request = require("supertest")(app);
-const connection = require("../connection");
+const { connection } = require("../connection");
 chai.use(chaiSorted);
 
 describe("/", () => {
+  beforeEach(() => {
+    return connection.seed.run();
+  });
+  after(() => {
+    connection.destroy();
+  });
   describe("/api", () => {
-    beforeEach(() => {
-      return connection.seed.run();
-    });
-    after(() => {
-      return connection.destroy();
-    });
     describe("GET /topics", () => {
       it("status:200 responds with an array of topics", () => {
         return request
@@ -22,6 +22,9 @@ describe("/", () => {
           .expect(200)
           .then(res => {
             expect(res.body.topics).to.be.an("array");
+            // expect(results[0]).to.contain.keys(
+            //   "slug", "description"
+            // );s
           });
       });
     });
