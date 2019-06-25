@@ -9,16 +9,20 @@ chai.use(chaiSorted);
 
 describe("/", () => {
   describe("/api", () => {
-    // beforeEach(() => {
-    //   return connection.seed.run();
-    // });
-    // after(() => {
-    //   return connection.destroy();
-    // });
-
+    beforeEach(() => {
+      return connection.seed.run();
+    });
+    after(() => {
+      return connection.destroy();
+    });
     describe("GET /topics", () => {
       it("status:200 responds with an array of topics", () => {
-        return request.get("/api/topics").expect(200);
+        return request
+          .get("/api/topics")
+          .expect(200)
+          .then(res => {
+            expect(res.body.topics).to.be.an("array");
+          });
       });
     });
   });
