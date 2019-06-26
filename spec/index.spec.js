@@ -20,11 +20,9 @@ describe("/", () => {
         return request
           .get("/api/topics")
           .expect(200)
-          .then(res => {
-            expect(res.body.topics).to.be.an("array");
-            // expect(results[0]).to.contain.keys(
-            //   "slug", "description"
-            // );s
+          .then(({ body }) => {
+            expect(body.topics).to.be.an("array");
+            expect(body.topics[0]).to.contain.keys("slug", "description");
           });
       });
     });
