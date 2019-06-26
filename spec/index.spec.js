@@ -50,5 +50,10 @@ describe("/", () => {
           });
       });
     });
+    describe("GET /articles/:articleid", () => {
+      it("status 200: responds with a single article", () => {
+        return request.get("/api/articles/1").expect(200);
+      });
+    });
   });
 });
