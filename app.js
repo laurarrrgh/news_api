@@ -4,14 +4,17 @@ const { apiRouter } = require("./routers/apiRouter");
 const {
   handles500errors,
   routeNotFound,
-  methodNotAllowed
+  methodNotAllowed,
+  handleCustomeErrors
 } = require("./errors");
 
 app.use(express.json());
 
 app.use("/api", apiRouter);
-app.use(handles500errors);
+
 app.use(routeNotFound);
 app.use(methodNotAllowed);
+app.use(handleCustomeErrors);
+app.use(handles500errors);
 
 module.exports = { app };
