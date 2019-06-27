@@ -93,7 +93,7 @@ describe("/", () => {
           });
       });
     });
-    describe.only("PATCH /api/articles/:articleid", () => {
+    describe("PATCH /api/articles/:articleid", () => {
       it("status 200: responds with an updated article with new vote count", () => {
         return request
           .patch("/api/articles/1")
@@ -139,21 +139,28 @@ describe("/", () => {
           });
       });
     });
-    describe("POST /api/articles/:article_id/comments", () => {
+    describe.only("POST /api/articles/:article_id/comments", () => {
       it("status 201: responds with a new comment obj", () => {
         return request
-          .post("/api/articles/1")
-          .send({ body: "Northcoders Rules!", created_by: "butter_bridge" })
+          .post("/api/articles/1/comments")
+          .send({
+            body: "When life gives you shadows, make shadow puppets",
+            created_by: "butter_bridge"
+          })
           .expect(201)
           .then(({ body: { comment: { body } } }) => {
             expect(comment).to.equal({
-              body: "Northcoders Rules!",
+              body: "When life gives you shadows, make shadow puppets",
               belongs_to: "Living in the shadow of a great man",
               created_by: "butter_bridge",
               votes: 0,
               created_at: 1511354163389
             });
           });
+        // ERROR 400: when posting a value of incorrect type
+        // ERROR 400 when missing required colum
+        // ERROR 400 when adding non-existant columns
+        // ERROR 422 when posting correctly formatted id that does not exist
       });
     });
     describe("GET /api/articles/:article_id/comments", () => {
