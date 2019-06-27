@@ -1,5 +1,5 @@
 const express = require("express");
-const articleRouter = express.Router();
+const articleRouter = express.Router({ mergeParams: true });
 const { getArticle, patchArticle } = require("../controller/articleController");
 const { commentRouter } = require("./commentRouter.js");
 
@@ -8,6 +8,6 @@ articleRouter
   .get(getArticle)
   .patch(patchArticle);
 
-articleRouter.route("/:article_id/comments", commentRouter);
+articleRouter.use("/:article_id/comments", commentRouter);
 
 module.exports = { articleRouter };
