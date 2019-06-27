@@ -139,7 +139,7 @@ describe("/", () => {
           });
       });
     });
-    describe.only("POST /api/articles/:article_id/comments", () => {
+    describe("POST /api/articles/:article_id/comments", () => {
       it("status 201: responds with a new comment obj", () => {
         return request
           .post("/api/articles/1/comments")
@@ -163,15 +163,15 @@ describe("/", () => {
         // ERROR 422 when posting correctly formatted id that does not exist
       });
     });
-    describe("GET /api/articles/:article_id/comments", () => {
+    describe.only("GET /api/articles/:article_id/comments", () => {
       it("status 200: responds with an array of comments for the given article ID", () => {
         return request
           .get("/api/articles/1/comments")
           .expect(200)
-          .then(({ body: { article } }) => {
-            expect({ body: { article } }).to.contain.keys(
+          .then(({ body: { comments } }) => {
+            expect(comments[0]).to.contain.keys(
               "comment_id",
-              "topic",
+              "votes",
               "author",
               "created_at",
               "body"
