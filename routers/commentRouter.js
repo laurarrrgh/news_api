@@ -6,7 +6,7 @@ const {
 } = require("../controller/commentController");
 
 commentRouter
-  .route("/comments") //may need to be '/'
+  .route("/") //may need to be '/'
   .get(getCommentsByArticleID)
   .post(postComment);
 
