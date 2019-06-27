@@ -11,14 +11,12 @@ const fetchComments = articleid => {
       "comments.created_at",
       "comments.author",
       "comments.body"
-    );
-  // .groupBy("comments.comment_id");
-  // .then(comments => {
-  //   if (article.length === 0) {
-  //     return Promise.reject({ status: "404", msg: "Page Not Found" });
-  //   }
-  //   return comments;
-  // });
+    )
+    .then(comments => {
+      if (comments.length === 0) {
+        return Promise.reject({ status: "404", msg: "Page Not Found" });
+      } else return comments;
+    });
 };
 
 // onhold
