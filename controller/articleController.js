@@ -6,17 +6,25 @@ exports.getArticle = (req, res, next) => {
     .then(article => {
       res.status(200).send({ article });
     })
-    .catch(next);
+    .catch(console.log);
 };
 
 exports.patchArticle = (req, res, next) => {
   const { inc_votes } = req.body;
-  const { article_id } = req.params; // this isnt coming through
-  //console.log(req.params, "req.params - controller");
-  // console.log(article_id, "no {} controller");
-  // console.log({ article_id }, "article id in { } controller");
-  console.log(res);
-  updateArticle(inc_votes, article_id)
-    .then(([article]) => res.status(200).send(article))
-    .catch(next);
+  const { article_id } = req.params;
+  if (inc_votes === undefined || !Number.isInteger(inc_votes)) {
+    return next({ status: 400, msg: "Bad Request" });
+  } else
+    updateArticle(inc_votes, article_id)
+      .then(([article]) => res.status(200).send({ article }))
+      .catch(next);
 };
+
+// custom err?
+// promise.reject
+// .then(article => {
+//   if ({article_id} === 0 || ) {
+//     return Promise.reject({ status: "400", msg: "Bad Request" });
+//   }
+//   return article[0];
+// });
