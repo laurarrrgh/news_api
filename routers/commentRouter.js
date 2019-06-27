@@ -1,9 +1,13 @@
 const express = require("express");
 const commentRouter = express.Router();
-const { postComment } = require("../controller/commentController");
+const {
+  postComment,
+  getCommentsByArticleID
+} = require("../controller/commentController");
 
-commentRouter.route("/:comment_id").post(postComment);
+commentRouter
+  .route("/")
+  .get(getCommentsByArticleID)
+  .post(postComment);
 
 module.exports = { commentRouter };
-
-// require in the article router??
