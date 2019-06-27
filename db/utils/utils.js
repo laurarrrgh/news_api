@@ -1,7 +1,8 @@
 exports.formatDate = list => {
-  const formattedDate = [...list];
-  formattedDate.map(ele => {
-    ele["created_at"] = new Date(ele["created_at"]);
+  const formattedDate = list.map(ele => {
+    const newObj = { ...ele };
+    newObj["created_at"] = new Date(ele["created_at"]);
+    return newObj;
   });
   return formattedDate;
 };
