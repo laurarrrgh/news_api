@@ -16,9 +16,7 @@ const fetchArticle = articleid => {
     });
 };
 
-const updateArticle = (article_id, inc_votes) => {
-  // console.log(inc_votes, "inc_votes - model");
-  // console.log(article_id, "id - controller");
+const updateArticle = (inc_votes, article_id) => {
   return connection
     .increment("votes", inc_votes)
     .from("articles")
