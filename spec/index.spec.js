@@ -178,6 +178,22 @@ describe("/", () => {
             );
           });
       });
+      it("ERROR status 404: when given an article id that is not in db", () => {
+        return request
+          .get("/api/articles/1000000000/comments")
+          .expect(404)
+          .then(({ body }) => {
+            expect(body.msg).to.equal("Page Not Found");
+          });
+      });
+      it("ERROR status 400: when given an article id that is nonsense", () => {
+        return request
+          .get("/api/articles/potatoes/comments")
+          .expect(400)
+          .then(({ body }) => {
+            expect(body.msg).to.equal("Bad Request");
+          });
+      });
     });
   });
 });
