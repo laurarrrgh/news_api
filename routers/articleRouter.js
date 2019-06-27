@@ -8,6 +8,6 @@ articleRouter
   .get(getArticle)
   .patch(patchArticle);
 
-articleRouter.use("/:article_id/comments", commentRouter);
+articleRouter.use("/:article_id/", commentRouter);
 
 module.exports = { articleRouter };
