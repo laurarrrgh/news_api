@@ -5,7 +5,13 @@ const fetchComments = articleid => {
     .from("articles")
     .join("comments", "comments.article_id", "articles.article_id")
     .where("comments.article_id", "=", articleid)
-    .select("comment_id", "votes", "created_at", "author", "body");
+    .select(
+      "comment_id",
+      "comments.votes",
+      "comments.created_at",
+      "comments.author",
+      "comments.body"
+    );
   // .groupBy("comments.comment_id");
   // .then(comments => {
   //   if (article.length === 0) {
