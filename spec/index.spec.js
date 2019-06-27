@@ -93,43 +93,84 @@ describe("/", () => {
           });
       });
     });
-    describe("PATCH /api/articles/:articleid", () => {
+    describe.only("PATCH /api/articles/:articleid", () => {
       it("status 200: responds with an updated article with new vote count", () => {
         return request
           .patch("/api/articles/1")
           .expect(200)
           .send({ inc_votes: 100 })
           .then(({ body: { article } }) => {
-            console.log({ body: { votes } }, "spec");
-            expect(article.votes).to.equal("200");
-            //.then(({ body: { article } }) => {
-            //console.log(body);
-            // expect(body).to.eql({
-            //   title: "Living in the shadow of a great man",
-            //   topic: "mitch",
-            //   author: "butter_bridge",
-            //   body: "I find this existence challenging",
-            //   created_at: 1542284514171,
-            //   votes: 200
-          }); /// I dont know why this isnt working!
+            expect(article).to.eql({
+              article_id: 1,
+              title: "Living in the shadow of a great man",
+              topic: "mitch",
+              author: "butter_bridge",
+              body: "I find this existence challenging",
+              created_at: "2018-11-15T12:21:54.171Z",
+              votes: 200
+            });
+          });
+      });
+      it("ERROR: No votes on request body", () => {
+        return request
+          .patch("/api/articles/1")
+          .send({})
+          .expect(400)
+          .then(({ body: { msg } }) => {
+            expect(msg).to.eql("Bad Request");
+          });
+      });
+      it("ERROR: Invalid inc_votes", () => {
+        return request
+          .patch("/api/articles/1")
+          .send({ inc_votes: "cat" })
+          .expect(400)
+          .then(({ body: { msg } }) => {
+            expect(msg).to.eql("Bad Request");
+          });
+      });
+      it("ERROR: additional properties on the request body", () => {
+        return request
+          .patch("/api/articles/1")
+          .send({ inc_votes: "cat", name: "Mitch" })
+          .expect(400)
+          .then(({ body: { msg } }) => {
+            expect(msg).to.eql("Bad Request");
+          });
       });
     });
-  });
-  describe.only("POST /api/articles/:article_id/comments", () => {
-    it("status 201: responds with a new comment obj", () => {
-      return request
-        .post("/api/articles/1")
-        .send({ body: "Northcoders Rules!", created_by: "butter_bridge" })
-        .expect(201)
-        .then(({ body: { comment: { body } } }) => {
-          expect(comment).to.equal({
-            body: "Northcoders Rules!",
-            belongs_to: "Living in the shadow of a great man",
-            created_by: "butter_bridge",
-            votes: 0,
-            created_at: 1511354163389
+    describe("POST /api/articles/:article_id/comments", () => {
+      it("status 201: responds with a new comment obj", () => {
+        return request
+          .post("/api/articles/1")
+          .send({ body: "Northcoders Rules!", created_by: "butter_bridge" })
+          .expect(201)
+          .then(({ body: { comment: { body } } }) => {
+            expect(comment).to.equal({
+              body: "Northcoders Rules!",
+              belongs_to: "Living in the shadow of a great man",
+              created_by: "butter_bridge",
+              votes: 0,
+              created_at: 1511354163389
+            });
           });
-        });
+      });
+    });
+    describe("GET /api/articles/:article_id/comments", () => {
+      it("status 200: responds with an array of comments for the given article ID", () => {
+        return request
+          .get("/api/articles/1/comments")
+          .expect(200)
+          .then(({ body: { article } }) => {
+            expect({ body: { article } }).to.contain.keys(
+              "comment_id",
+              "topic",
+              "author",
+              "created_at",
+              "body"
+            );
+          });
+      });
     });
   });
 });
