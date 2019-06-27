@@ -1,7 +1,13 @@
 const express = require("express");
 const articleRouter = express.Router();
-const { getArticles } = require("../controller/articleController");
+const { getArticle, patchArticle } = require("../controller/articleController");
+const { commentRouter } = require("./commentRouter.js");
 
-articleRouter.route("/").get(getArticles);
+articleRouter
+  .route("/:article_id")
+  .get(getArticle)
+  .patch(patchArticle);
+
+articleRouter.route("/:article_id/comments", commentRouter);
 
 module.exports = { articleRouter };
