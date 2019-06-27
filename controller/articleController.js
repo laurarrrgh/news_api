@@ -6,7 +6,7 @@ exports.getArticle = (req, res, next) => {
     .then(article => {
       res.status(200).send({ article });
     })
-    .catch(console.log);
+    .catch(next);
 };
 
 exports.patchArticle = (req, res, next) => {
