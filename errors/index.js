@@ -1,3 +1,10 @@
+exports.handle400errors = (err, req, res, next) => {
+  const codes = ["22P02"];
+  if (codes.includes(err.code)) res.status(400).send({ msg: "Bad Request" });
+  // might need to change to {msg:err.message || 'Bad Request}
+  else next(err);
+};
+
 exports.routeNotFound = (req, res) => {
   res.status(404).send({ msg: "Page Not Found" });
 };
