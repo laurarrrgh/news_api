@@ -260,6 +260,14 @@ describe("/", () => {
                   );
                 });
             });
+            it("status 200: objects have a comment count", () => {
+              return request
+                .get("/api/articles/1")
+                .expect(200)
+                .then(({ body: { article } }) => {
+                  expect(article.comment_count).to.equal("13");
+                });
+            });
           });
           describe("error handling", () => {});
           describe("queries", () => {});
