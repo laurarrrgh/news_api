@@ -173,13 +173,16 @@ describe("/", () => {
               });
             });
         });
-        // ERROR 400: when posting a value of incorrect type
-        // ERROR 400 when missing required colum
-        // ERROR 400 when adding non-existant columns
-        // ERROR 422 when posting correctly formatted id that does not exist
+        describe("error handling", () => {
+          // it("ERROR 400: when posting a value of incorrect type", () => {});
+          // it("ERROR 400: when post body is missing a required column", () => {});
+          // it("ERROR 400: when post body tries to add a value to a non=existant column", () => {});
+          // it("ERROR 422: when posting to an integer article_id that does not exist", () => {});
+          // it("ERROR 404: when posting to a nonsense article_id", () => {});
+        });
       });
     });
-    describe("GET /api/articles/:article_id/comments", () => {
+    describe.only("GET /api/articles/:article_id/comments", () => {
       describe("default behaviour", () => {
         it("status 200: responds with an array of comments for the given article ID", () => {
           return request
@@ -213,7 +216,29 @@ describe("/", () => {
               });
           });
           describe("queries", () => {
-            it("it is a test query", () => {});
+            it("sorts the given articles by a valid column ID", () => {
+              return request
+                .get("/api/articles/1/comments?sort_by=votes")
+                .expect(200)
+                .then(({ body }) => {
+                  expect(body.comments).to.be.sortedBy("votes", {
+                    descending: false
+                  });
+                });
+            });
+            it("sort order defaults to created_at", () => {
+              return request
+                .get("/api/articles/1/comments?sort_by=created_at")
+                .expect(200)
+                .then(({ body }) => {
+                  expect(body.comments).to.be.sortedBy("created_at", {
+                    descending: true
+                  });
+                });
+            });
+            // it("order can be set to either ascending or descending", () => {});
+            // it("order defaults to descending", () => {});
+            // it("when passed an invalid column to sort by defaults to created_at - decending", () => {});
           });
         });
       });
