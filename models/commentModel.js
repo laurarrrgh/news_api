@@ -12,6 +12,7 @@ const fetchComments = articleid => {
       "comments.author",
       "comments.body"
     )
+    .orderBy("votes", "asc" || "created_at", "desc")
     .then(comments => {
       if (comments.length === 0) {
         return Promise.reject({ status: "404", msg: "Page Not Found" });
