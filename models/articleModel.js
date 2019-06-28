@@ -31,4 +31,33 @@ const updateArticle = (inc_votes, article_id) => {
   // });
 };
 
-module.exports = { fetchArticle, updateArticle };
+const fetchAllArticles = () => {
+  return connection
+    .select(
+      "articles.author",
+      "articles.title",
+      "articles.article_id",
+      "articles.topic",
+      "articles.created_at",
+      "articles.votes"
+    )
+    .from("articles")
+    .count({ comment_count: "comment_id" })
+    .leftJoin("comments", "comments.article_id", "articles.article_id")
+    .groupBy("articles.article_id")
+    .then(articles => {
+      if (articles.length === 0) {
+        return Promise.reject({ status: "404", msg: "Page Not Found" });
+      }
+      return articles;
+    });
+
+  // return connection
+  //   .from("articles")
+  //   .select("*")
+  //   .count({ comment_count: "comment_id" })
+  //   .leftJoin("comments", "comments.article_id", "articles.article_id")
+  //   .groupBy("articles.article_id")
+};
+
+module.exports = { fetchArticle, updateArticle, fetchAllArticles };
