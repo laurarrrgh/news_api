@@ -1,8 +1,14 @@
 const express = require("express");
 const articleRouter = express.Router({ mergeParams: true });
-const { getArticle, patchArticle } = require("../controller/articleController");
+const {
+  getArticle,
+  patchArticle,
+  getAllArticles
+} = require("../controller/articleController");
 const { commentRouter } = require("./commentRouter.js");
 const { getCommentsByArticleID } = require("../controller/commentController");
+
+articleRouter.route("/").get(getAllArticles);
 
 articleRouter
   .route("/:article_id")
