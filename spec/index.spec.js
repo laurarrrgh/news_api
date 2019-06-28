@@ -182,7 +182,7 @@ describe("/", () => {
         });
       });
     });
-    describe.only("GET /api/articles/:article_id/comments", () => {
+    describe("GET /api/articles/:article_id/comments", () => {
       describe("default behaviour", () => {
         it("status 200: responds with an array of comments for the given article ID", () => {
           return request
@@ -240,6 +240,29 @@ describe("/", () => {
             // it("order defaults to descending", () => {});
             // it("when passed an invalid column to sort by defaults to created_at - decending", () => {});
           });
+        });
+        describe.only("GET /api/articles", () => {
+          describe("default behaviour", () => {
+            it("status 200: responds with an array of articles", () => {
+              return request
+                .get("/api/articles/")
+                .expect(200)
+                .then(({ body: articles }) => {
+                  expect(articles).to.be.an("array");
+                  expect(articles[0]).to.contain.keys(
+                    "article_id",
+                    "title",
+                    "votes",
+                    "topic",
+                    "author",
+                    "created_at",
+                    "comment_count"
+                  );
+                });
+            });
+          });
+          describe("error handling", () => {});
+          describe("queries", () => {});
         });
       });
     });
