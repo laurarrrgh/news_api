@@ -1,4 +1,8 @@
-const { fetchArticle, updateArticle } = require("../models/articleModel.js");
+const {
+  fetchArticle,
+  updateArticle,
+  fetchAllArticles
+} = require("../models/articleModel.js");
 
 exports.getArticle = (req, res, next) => {
   const { article_id } = req.params;
@@ -18,6 +22,14 @@ exports.patchArticle = (req, res, next) => {
     updateArticle(inc_votes, article_id)
       .then(([article]) => res.status(200).send({ article }))
       .catch(next);
+};
+
+exports.getAllArticles = (req, res, next) => {
+  fetchAllArticles()
+    .then(articles => {
+      res.status(200).send(articles);
+    })
+    .catch(console.log);
 };
 
 // custom err?
