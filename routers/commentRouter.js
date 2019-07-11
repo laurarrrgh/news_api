@@ -1,13 +1,15 @@
 const express = require("express");
-const commentRouter = express.Router();
+const commentRouter = express.Router({ mergeParams: true });
+const { methodNotAllowed } = require("../errors/index");
 const {
-  postComment,
-  getCommentsByArticleID
+  patchComment,
+  deleteComment
 } = require("../controller/commentController");
 
 commentRouter
-  .route("/") //may need to be '/'
-  .get(getCommentsByArticleID)
-  .post(postComment);
+  .route("/:comment_id")
+  .patch(patchComment)
+  .delete(deleteComment)
+  .all(methodNotAllowed);
 
 module.exports = { commentRouter };
