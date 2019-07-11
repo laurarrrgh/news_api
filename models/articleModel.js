@@ -1,6 +1,14 @@
 const { connection } = require("../connection.js");
-
 const fetchArticle = articleid => {
+  const sortByParams = [
+    "title",
+    "topic",
+    "author",
+    "created_at",
+    "votes",
+    "article_id",
+    "comment_count"
+  ];
   return connection
     .from("articles")
     .where("articles.article_id", "=", articleid)
@@ -22,42 +30,37 @@ const updateArticle = (inc_votes, article_id) => {
     .from("articles")
     .where({ article_id })
     .returning("*");
-
-  // .then(articles => {
-  //   if (articles.length === 0) {
-  //     return Promise.reject({ status: "404", msg: "Page Not Found" });
-  //   }
-  //   return article[0];
-  // });
 };
 
-const fetchAllArticles = () => {
-  return connection
-    .select(
-      "articles.author",
-      "articles.title",
-      "articles.article_id",
-      "articles.topic",
-      "articles.created_at",
-      "articles.votes"
-    )
-    .from("articles")
-    .count({ comment_count: "comment_id" })
-    .leftJoin("comments", "comments.article_id", "articles.article_id")
-    .groupBy("articles.article_id")
-    .then(articles => {
-      if (articles.length === 0) {
-        return Promise.reject({ status: "404", msg: "Page Not Found" });
-      }
-      return articles;
-    });
-
-  // return connection
-  //   .from("articles")
-  //   .select("*")
-  //   .count({ comment_count: "comment_id" })
-  //   .leftJoin("comments", "comments.article_id", "articles.article_id")
-  //   .groupBy("articles.article_id")
+const fetchAllArticles = ({ sort_by, order_by, author, topic }) => {
+  if (!["asc", "desc", undefined].includes(order_by)) {
+    return Promise.reject({ status: 400, msg: "Bad Request" });
+  } else {
+    return connection
+      .select(
+        "articles.author",
+        "articles.title",
+        "articles.article_id",
+        "articles.topic",
+        "articles.created_at",
+        "articles.votes"
+      )
+      .from("articles")
+      .count({ comment_count: "comment_id" })
+      .leftJoin("comments", "comments.article_id", "articles.article_id")
+      .groupBy("articles.article_id")
+      .orderBy(sort_by || "created_at", order_by || "desc")
+      .modify(query => {
+        if (author) query.where({ "articles.author": author });
+        if (topic) query.where({ "articles.topic": topic });
+      })
+      .then(articles => {
+        if (articles.length === 0) {
+          return Promise.reject({ status: "404", msg: "Page Not Found" });
+        }
+        return articles;
+      });
+  }
 };
 
 module.exports = { fetchArticle, updateArticle, fetchAllArticles };
