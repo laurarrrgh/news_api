@@ -118,7 +118,6 @@ describe("/", () => {
               });
           });
           it("ERROR 400: when given an article id that is nonsense", () => {
-            ``;
             return request
               .get("/api/articles/potatoes")
               .expect(400)
@@ -148,14 +147,23 @@ describe("/", () => {
               });
             });
         });
+
         describe("error handling", () => {
           it("ERROR 400: No votes on request body", () => {
             return request
               .patch("/api/articles/1")
               .send({})
-              .expect(400)
-              .then(({ body: { msg } }) => {
-                expect(msg).to.eql("Bad Request");
+              .expect(200)
+              .then(({ body: { article } }) => {
+                expect(article).to.eql({
+                  article_id: 1,
+                  title: "Living in the shadow of a great man",
+                  topic: "mitch",
+                  author: "butter_bridge",
+                  body: "I find this existence challenging",
+                  created_at: "2018-11-15T12:21:54.171Z",
+                  votes: 100
+                });
               });
           });
           it("ERROR 400: Invalid inc_votes", () => {
@@ -176,6 +184,7 @@ describe("/", () => {
                 expect(msg).to.eql("Bad Request");
               });
           });
+
           it("ERROR 405 when invalid method is applied", () => {
             const invalidMethods = ["put", "post", "delete"];
             const methodPromises = invalidMethods.map(method => {
@@ -271,10 +280,18 @@ describe("/", () => {
               );
             });
         });
+        it("status 200: responds with an empty array when an article ID is valid but has no comment", () => {
+          return request
+            .get("/api/articles/2/comments")
+            .expect(200)
+            .then(({ body: { comments } }) => {
+              expect(comments).to.eql([]);
+            });
+        });
         describe("error handling", () => {
           it("ERROR 404: when given an article id that is not in db", () => {
             return request
-              .get("/api/articles/1000000000/comments")
+              .get("/api/articles/1000000000/comments") // BROKEN. Testing an empty arr for both cases of 1. no comments on selected article and 2. no article avaiable. Cannot get both tests to pass.
               .expect(404)
               .then(({ body }) => {
                 expect(body.msg).to.equal("Page Not Found");
@@ -358,7 +375,7 @@ describe("/", () => {
           return request
             .get("/api/articles/")
             .expect(200)
-            .then(({ body: articles }) => {
+            .then(({ body: { articles } }) => {
               expect(articles).to.be.an("array");
               expect(articles[0]).to.contain.keys(
                 "article_id",
@@ -400,9 +417,28 @@ describe("/", () => {
             .get("/api/articles/?sort_by=author")
             .expect(200)
             .then(({ body }) => {
-              console.log(body.articles, "body.article");
-              expect(body).to.be.sortedBy("author", {
+              expect(body.articles).to.be.sortedBy("author", {
                 descending: true
+              });
+            });
+        });
+        it("QUERY: order can be set to either ascending or descending", () => {
+          return request
+            .get("/api/articles/?order=desc")
+            .expect(200)
+            .then(({ body }) => {
+              expect(body.articles).to.be.sortedBy("created_at", {
+                descending: true
+              });
+            });
+        });
+        it("QUERY: order can be set to either ascending or descending", () => {
+          return request
+            .get("/api/articles/?order=asc")
+            .expect(200)
+            .then(({ body }) => {
+              expect(body.articles).to.be.sortedBy("created_at", {
+                descending: false
               });
             });
         });
@@ -411,7 +447,7 @@ describe("/", () => {
             .get("/api/articles/?sort_by=created_at")
             .expect(200)
             .then(({ body }) => {
-              expect(body).to.be.sortedBy("created_at", {
+              expect(body.articles).to.be.sortedBy("created_at", {
                 descending: true
               });
             });
@@ -421,7 +457,7 @@ describe("/", () => {
             .get("/api/articles?sort_by=created_at")
             .expect(200)
             .then(({ body }) => {
-              expect(body).to.be.sortedBy("created_at", {
+              expect(body.articles).to.be.sortedBy("created_at", {
                 descending: true
               });
             });
@@ -429,11 +465,9 @@ describe("/", () => {
         it("QUERY: when passed an invalid column to sort by, will default to created_at & desc", () => {
           return request
             .get("/api/articles/?order=potatoes")
-            .expect(200)
+            .expect(400)
             .then(({ body }) => {
-              expect(body).to.be.sortedBy("created_at", {
-                descending: true
-              });
+              expect(body.msg).to.equal("Bad Request");
             });
         });
       });
@@ -458,6 +492,23 @@ describe("/", () => {
             });
         });
         describe("error handling", () => {
+          it("200: No votes on request body", () => {
+            return request
+              .patch("/api/comments/1")
+              .send({})
+              .expect(200)
+              .then(({ body: { comment } }) => {
+                expect(comment).to.eql({
+                  comment_id: 1,
+                  author: "butter_bridge",
+                  article_id: 9,
+                  votes: 16,
+                  created_at: "2017-11-22T12:36:03.389Z",
+                  body:
+                    "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!"
+                });
+              });
+          });
           it("ERROR 404: when given an article id that is nonsense", () => {
             return request
               .patch("/api/comments/cats")
@@ -466,7 +517,7 @@ describe("/", () => {
                 expect(body.msg).to.equal("Bad Request");
               });
           });
-          it("ERROR 404: when given an article id that is not in db", () => {
+          it("ERROR 400: when given an article id that is not in db", () => {
             return request
               .patch("/api/comments/1000000000000")
               .expect(400)
