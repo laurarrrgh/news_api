@@ -24,7 +24,7 @@ const fetchArticle = articleid => {
     });
 };
 
-const updateArticle = (inc_votes, article_id) => {
+const updateArticle = (inc_votes = 0, article_id) => {
   return connection
     .increment("votes", inc_votes)
     .from("articles")
@@ -32,8 +32,8 @@ const updateArticle = (inc_votes, article_id) => {
     .returning("*");
 };
 
-const fetchAllArticles = ({ sort_by, order_by, author, topic }) => {
-  if (!["asc", "desc", undefined].includes(order_by)) {
+const fetchAllArticles = ({ sort_by, order, author, topic }) => {
+  if (!["asc", "desc", undefined].includes(order)) {
     return Promise.reject({ status: 400, msg: "Bad Request" });
   } else {
     return connection
@@ -49,7 +49,7 @@ const fetchAllArticles = ({ sort_by, order_by, author, topic }) => {
       .count({ comment_count: "comment_id" })
       .leftJoin("comments", "comments.article_id", "articles.article_id")
       .groupBy("articles.article_id")
-      .orderBy(sort_by || "created_at", order_by || "desc")
+      .orderBy(sort_by || "created_at", order || "desc")
       .modify(query => {
         if (author) query.where({ "articles.author": author });
         if (topic) query.where({ "articles.topic": topic });
