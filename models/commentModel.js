@@ -40,7 +40,7 @@ const createComment = (article_id, username, body) => {
   }
 };
 
-const updateComment = (comment_id, inc_votes) => {
+const updateComment = (comment_id, inc_votes = 0) => {
   return connection
     .select("comments.*")
     .from("comments")
